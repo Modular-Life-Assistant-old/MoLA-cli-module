@@ -7,6 +7,10 @@ import time
 class Module(TelnetServerModule):
     server_port = 14212
 
+    def command_notify(self, send_handler, args, kwargs, client_key):
+        NotificationManager.notify(self.module_name, ' '.join(args))
+        send_handler('notification added.')
+
     def command_shutdown(self, send_handler, args, kwargs, client_key):
         send_handler('shutdown %s ...' % settings.NAME)
         Daemon.stop()
@@ -28,6 +32,7 @@ class Module(TelnetServerModule):
     def init(self):
         super().init()
         NotificationManager.register(self.module_name, self.__notify)
+        self.register_command('notify', self.command_notify, 'add notification message')
         self.register_command('shutdown', self.command_shutdown, 'shutdown %s process' % settings.NAME)
         self.register_command('uptime', self.command_uptime, 'uptime of %s process' % settings.NAME)
 
