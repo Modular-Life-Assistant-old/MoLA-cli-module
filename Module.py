@@ -1,4 +1,4 @@
-from core import Daemon, NotificationManager, settings
+from core import Daemon, ModuleManager, NotificationManager, settings
 from helpers.modules.TelnetServerModule import TelnetServerModule
 
 import time
@@ -35,6 +35,11 @@ class Module(TelnetServerModule):
         self.register_command('notify', self.command_notify, 'add notification message')
         self.register_command('shutdown', self.command_shutdown, 'shutdown %s process' % settings.NAME)
         self.register_command('uptime', self.command_uptime, 'uptime of %s process' % settings.NAME)
+
+    def new_client(self, socket, ip, port, client_key):
+        personnality = ModuleManager.get('personnality')
+        if personnality:
+            self.send(personnality.get_greeting().capitalize() + ' ' + personnality.get_user_name() + '.', client_key)
 
     def __notify(self, msg):
         for client_key in self.clients:
